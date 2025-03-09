@@ -3,373 +3,268 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ScholarlySearch - CrossRef Literature Explorer</title>
+    <title>Nuclear Physics Research Assistant</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary-color: #2c3e50;
-            --secondary-color: #3498db;
-            --accent-color: #e74c3c;
-            --background-color: #f5f7fa;
+            --primary-color: #3a86ff;
+            --secondary-color: #8338ec;
+            --accent-color: #ff006e;
+            --background-color: #f8f9fa;
             --card-color: #ffffff;
             --text-color: #333333;
-            --text-light: #7f8c8d;
-            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            --transition: all 0.3s ease;
+            --light-gray: #e9ecef;
+            --medium-gray: #dee2e6;
+            --dark-gray: #6c757d;
+            --message-user: #e3f2fd;
+            --message-ai: #f0f4fc;
+            --code-bg: #f1f3f5;
+            --blockquote-bg: #f8f9fa;
+            --blockquote-border: #dee2e6;
+            --table-border: #dee2e6;
+            --table-header-bg: #e9ecef;
         }
-
+        
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-
+        
         body {
             background-color: var(--background-color);
             color: var(--text-color);
             line-height: 1.6;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
-
-        header {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            color: white;
-            padding: 2rem 0;
-            text-align: center;
-            box-shadow: var(--shadow);
-            position: relative;
-            overflow: hidden;
-        }
-
-        header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><polygon fill="rgba(255,255,255,0.05)" points="0,100 100,0 100,100"/></svg>');
-            background-size: cover;
-        }
-
+        
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 0 1rem;
-            position: relative;
+            padding: 20px;
+            width: 100%;
         }
-
-        .title {
-            font-size: 2.5rem;
-            margin-bottom: 0.5rem;
-            position: relative;
+        
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
-
+        
+        .header-content {
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 8px;
+        }
+        
         .subtitle {
             font-size: 1.1rem;
             opacity: 0.9;
-            max-width: 800px;
-            margin: 0 auto 1.5rem;
+            max-width: 700px;
+            margin: 0 auto;
         }
-
-        .search-container {
-            background-color: var(--card-color);
-            padding: 2rem;
-            border-radius: 8px;
-            box-shadow: var(--shadow);
-            margin-top: -2rem;
-            margin-bottom: 2rem;
-            transition: var(--transition);
-        }
-
-        .search-container:hover {
-            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
-        }
-
-        .search-form {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .search-input {
+        
+        main {
             flex: 1;
-            padding: 0.8rem 1.2rem;
-            border: 2px solid #e0e0e0;
-            border-radius: 4px;
-            font-size: 1rem;
-            transition: var(--transition);
-        }
-
-        .search-input:focus {
-            border-color: var(--secondary-color);
-            outline: none;
-        }
-
-        .search-button {
-            background-color: var(--secondary-color);
-            color: white;
-            border: none;
-            padding: 0.8rem 1.5rem;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 1rem;
-            font-weight: 600;
-            transition: var(--transition);
             display: flex;
-            align-items: center;
-            gap: 0.5rem;
+            flex-direction: column;
+            height: calc(100vh - 180px);
         }
-
-        .search-button:hover {
-            background-color: #2980b9;
-        }
-
-        .journal-filters {
+        
+        .chat-container {
+            flex: 1;
             display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .filter-label {
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            display: block;
-        }
-
-        .journal-chip {
-            background-color: #ecf0f1;
-            padding: 0.4rem 0.8rem;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: var(--transition);
-            border: 1px solid transparent;
-        }
-
-        .journal-chip:hover {
-            background-color: #d6dbdf;
-        }
-
-        .journal-chip.selected {
-            background-color: var(--secondary-color);
-            color: white;
-        }
-
-        .results-container {
-            transition: var(--transition);
-        }
-
-        .results-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-
-        .results-title {
-            font-size: 1.5rem;
-            font-weight: 600;
-        }
-
-        .results-count {
-            color: var(--text-light);
-            font-size: 0.9rem;
-        }
-
-        .sort-options {
-            display: flex;
-            gap: 1rem;
-            align-items: center;
-        }
-
-        .sort-label {
-            font-size: 0.9rem;
-            color: var(--text-light);
-        }
-
-        .sort-select {
-            padding: 0.4rem 0.8rem;
-            border: 1px solid #e0e0e0;
-            border-radius: 4px;
-            font-size: 0.9rem;
-        }
-
-        .articles-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .article-card {
+            flex-direction: column;
             background-color: var(--card-color);
-            border-radius: 8px;
+            border-radius: 10px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+            margin: 20px auto;
+            width: 100%;
+            max-width: 900px;
             overflow: hidden;
-            box-shadow: var(--shadow);
-            transition: var(--transition);
-            border-top: 4px solid var(--secondary-color);
-            display: flex;
-            flex-direction: column;
-            height: 100%;
         }
-
-        .article-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .article-content {
-            padding: 1.5rem;
+        
+        .chat-messages {
             flex: 1;
-            display: flex;
-            flex-direction: column;
+            overflow-y: auto;
+            padding: 20px;
         }
-
-        .article-journal {
-            color: var(--secondary-color);
-            font-size: 0.9rem;
-            margin-bottom: 0.5rem;
+        
+        .message {
+            margin-bottom: 20px;
+            max-width: 85%;
+        }
+        
+        .message-user {
+            align-self: flex-end;
+            margin-left: auto;
+            background-color: var(--message-user);
+            border-radius: 18px 18px 0 18px;
+            padding: 12px 16px;
+        }
+        
+        .message-ai {
+            align-self: flex-start;
+            background-color: var(--message-ai);
+            border-radius: 18px 18px 18px 0;
+            padding: 12px 16px;
+        }
+        
+        .message-content {
+            line-height: 1.5;
+        }
+        
+        .message-time {
+            font-size: 0.8rem;
+            color: var(--dark-gray);
+            margin-top: 5px;
+            text-align: right;
+        }
+        
+        .papers-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: rgba(58, 134, 255, 0.05);
+            border-radius: 8px;
+            border: 1px solid rgba(58, 134, 255, 0.2);
+        }
+        
+        .papers-title {
             font-weight: 600;
-            display: flex;
-            align-items: center;
-        }
-
-        .impact-factor {
-            background-color: #f1c40f;
-            color: #333;
-            font-size: 0.7rem;
-            padding: 0.2rem 0.4rem;
-            border-radius: 4px;
-            margin-left: 0.5rem;
-            font-weight: 700;
-        }
-
-        .article-title {
+            margin-bottom: 15px;
+            color: var(--primary-color);
             font-size: 1.1rem;
-            margin-bottom: 0.8rem;
-            line-height: 1.4;
-            flex: 1;
-        }
-
-        .article-authors {
-            font-size: 0.9rem;
-            color: var(--text-light);
-            margin-bottom: 0.8rem;
-        }
-
-        .article-date {
-            font-size: 0.8rem;
-            color: var(--text-light);
-            margin-bottom: 1rem;
-        }
-
-        .article-abstract {
-            font-size: 0.9rem;
-            color: var(--text-color);
-            margin-bottom: 1rem;
-            overflow: hidden;
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
-        }
-
-        .article-footer {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            border-top: 1px solid #ecf0f1;
-            padding-top: 1rem;
         }
-
-        .article-doi {
-            font-size: 0.8rem;
-            color: var(--text-light);
+        
+        .papers-title:before {
+            content: "📚";
+            margin-right: 8px;
         }
-
-        .article-links {
-            display: flex;
-            gap: 0.8rem;
-        }
-
-        .article-link {
+        
+        .response-title {
+            font-weight: 600;
+            margin-bottom: 15px;
             color: var(--secondary-color);
-            font-size: 0.9rem;
-            text-decoration: none;
+            font-size: 1.1rem;
             display: flex;
             align-items: center;
-            gap: 0.3rem;
-            transition: var(--transition);
         }
-
-        .article-link:hover {
+        
+        .response-title:before {
+            content: "🤖";
+            margin-right: 8px;
+        }
+        
+        .ai-response-section {
+            margin-top: 20px;
+        }
+        
+        .paper-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .paper-item {
+            padding: 10px;
+            border: 1px solid var(--light-gray);
+            border-radius: 8px;
+            background-color: white;
+        }
+        
+        .paper-title {
+            font-weight: 600;
+            margin-bottom: 5px;
             color: var(--primary-color);
         }
-
-        .pagination {
+        
+        .paper-authors {
+            font-size: 0.9rem;
+            color: var(--dark-gray);
+            margin-bottom: 5px;
+        }
+        
+        .paper-link {
+            display: inline-block;
+            margin-top: 5px;
+            color: var(--secondary-color);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        
+        .paper-link:hover {
+            text-decoration: underline;
+        }
+        
+        .chat-input-container {
             display: flex;
-            justify-content: center;
-            gap: 0.5rem;
-            margin: 2rem 0;
+            padding: 15px;
+            background-color: var(--light-gray);
+            border-top: 1px solid var(--medium-gray);
         }
-
-        .page-button {
-            background-color: var(--card-color);
-            border: 1px solid #e0e0e0;
-            padding: 0.5rem 1rem;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: var(--transition);
+        
+        .chat-input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 1px solid var(--medium-gray);
+            border-radius: 24px;
+            font-size: 16px;
         }
-
-        .page-button:hover:not(.active) {
-            background-color: #f5f5f5;
+        
+        .chat-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(58, 134, 255, 0.2);
         }
-
-        .page-button.active {
-            background-color: var(--secondary-color);
+        
+        .send-button {
+            background-color: var(--primary-color);
             color: white;
-            border-color: var(--secondary-color);
-        }
-
-        .loading {
-            display: none;
-            justify-content: center;
-            margin: 2rem 0;
-        }
-
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid rgba(0, 0, 0, 0.1);
+            border: none;
             border-radius: 50%;
-            border-top-color: var(--secondary-color);
-            animation: spin 1s ease-in-out infinite;
+            width: 44px;
+            height: 44px;
+            margin-left: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
         }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        
+        .send-button:hover {
+            background-color: #2a75e6;
+            transform: scale(1.05);
         }
-
-        .no-results {
-            text-align: center;
-            padding: 2rem;
-            color: var(--text-light);
-            display: none;
+        
+        .settings-button {
+            background-color: var(--dark-gray);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            margin-left: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-
-        .error-message {
-            background-color: #fed7d7;
-            color: #9b2c2c;
-            padding: 1rem;
-            border-radius: 4px;
-            margin-bottom: 1rem;
-            text-align: center;
-            display: none;
+        
+        .settings-button:hover {
+            background-color: #5a6268;
         }
-
-        .modal {
+        
+        .settings-modal {
             display: none;
             position: fixed;
             top: 0;
@@ -377,1437 +272,907 @@
             width: 100%;
             height: 100%;
             background-color: rgba(0, 0, 0, 0.5);
-            z-index: 100;
-            overflow: auto;
-            padding: 2rem;
-        }
-
-        .modal-content {
-            background-color: var(--card-color);
-            border-radius: 8px;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 2rem;
-            position: relative;
-            animation: slideIn 0.3s ease;
-        }
-
-        @keyframes slideIn {
-            from { transform: translateY(-50px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-
-        .close-button {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            font-size: 1.5rem;
-            background: none;
-            border: none;
-            cursor: pointer;
-            color: var(--text-light);
-            transition: var(--transition);
-        }
-
-        .close-button:hover {
-            color: var(--accent-color);
-        }
-
-        .modal-header {
-            margin-bottom: 1.5rem;
-        }
-
-        .modal-title {
-            font-size: 1.5rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .modal-journal {
-            color: var(--secondary-color);
-            font-weight: 600;
-            display: flex;
+            z-index: 1000;
+            justify-content: center;
             align-items: center;
-            gap: 0.5rem;
-            margin-bottom: 0.5rem;
         }
-
-        .modal-authors {
-            color: var(--text-light);
-            margin-bottom: 0.5rem;
+        
+        .settings-content {
+            background-color: white;
+            padding: 25px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
         }
-
-        .modal-meta {
-            display: flex;
-            gap: 1.5rem;
-            margin-bottom: 1.5rem;
-            flex-wrap: wrap;
-        }
-
-        .meta-item {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .meta-label {
-            font-size: 0.8rem;
-            color: var(--text-light);
-        }
-
-        .meta-value {
-            font-weight: 600;
-        }
-
-        .modal-abstract {
-            margin-bottom: 1.5rem;
-            line-height: 1.6;
-        }
-
-        .modal-links {
-            display: flex;
-            gap: 1rem;
-            margin-top: 1.5rem;
-        }
-
-        .modal-link {
-            background-color: var(--secondary-color);
-            color: white;
-            text-decoration: none;
-            padding: 0.6rem 1.2rem;
-            border-radius: 4px;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: var(--transition);
-        }
-
-        .modal-link:hover {
-            background-color: #2980b9;
-        }
-
-        .modal-link.alt {
-            background-color: #f5f5f5;
-            color: var(--text-color);
-        }
-
-        .modal-link.alt:hover {
-            background-color: #e0e0e0;
-        }
-
-        footer {
-            background-color: var(--primary-color);
-            color: white;
-            padding: 2rem 0;
-            margin-top: 3rem;
-        }
-
-        .footer-content {
+        
+        .settings-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap;
-            gap: 1rem;
+            margin-bottom: 20px;
         }
-
-        .footer-logo {
+        
+        .settings-title {
             font-size: 1.5rem;
-            font-weight: 700;
+            font-weight: 600;
         }
-
-        .footer-text {
-            opacity: 0.8;
-            font-size: 0.9rem;
-        }
-
-        .footer-links {
-            display: flex;
-            gap: 1rem;
-        }
-
-        .footer-link {
-            color: white;
-            text-decoration: none;
-            opacity: 0.8;
-            transition: var(--transition);
-        }
-
-        .footer-link:hover {
-            opacity: 1;
-        }
-
-        @media (max-width: 768px) {
-            .title {
-                font-size: 2rem;
-            }
-            
-            .search-form {
-                flex-direction: column;
-            }
-            
-            .articles-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .footer-content {
-                flex-direction: column;
-                text-align: center;
-            }
-            
-            .modal-content {
-                padding: 1.5rem;
-            }
-        }
-
-        /* Additional UI Enhancements */
-        .theme-toggle {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            background: rgba(255, 255, 255, 0.2);
-            border: none;
-            color: white;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .theme-toggle:hover {
-            background: rgba(255, 255, 255, 0.3);
-        }
-
-        .badge {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background-color: var(--accent-color);
-            color: white;
-            font-size: 0.7rem;
-            padding: 0.1rem 0.4rem;
-            border-radius: 10px;
-        }
-
-        .advanced-options {
-            margin-top: 1rem;
-            padding-top: 1rem;
-            border-top: 1px solid #e0e0e0;
-            display: none;
-        }
-
-        .advanced-toggle {
+        
+        .close-button {
             background: none;
             border: none;
-            color: var(--secondary-color);
+            font-size: 1.5rem;
             cursor: pointer;
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-            gap: 0.3rem;
-            margin: 0 auto;
+            color: var(--dark-gray);
         }
-
-        .options-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 1rem;
-            margin-top: 1rem;
+        
+        .form-group {
+            margin-bottom: 20px;
         }
-
-        .option-group {
-            margin-bottom: 1rem;
-        }
-
-        .option-label {
-            font-weight: 600;
-            margin-bottom: 0.5rem;
+        
+        .form-group label {
             display: block;
-            font-size: 0.9rem;
+            margin-bottom: 8px;
+            font-weight: 600;
         }
-
-        .option-input {
+        
+        .form-group input {
             width: 100%;
-            padding: 0.6rem;
-            border: 1px solid #e0e0e0;
-            border-radius: 4px;
-            font-size: 0.9rem;
+            padding: 10px 15px;
+            border: 1px solid var(--medium-gray);
+            border-radius: 6px;
+            font-size: 16px;
         }
-
-        .filter-badge {
-            display: inline-flex;
-            align-items: center;
-            background-color: #e1f5fe;
-            color: #0277bd;
-            padding: 0.3rem 0.6rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            margin-right: 0.5rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .remove-filter {
-            margin-left: 0.4rem;
-            cursor: pointer;
-            color: #0277bd;
-            opacity: 0.7;
-            transition: var(--transition);
-        }
-
-        .remove-filter:hover {
-            opacity: 1;
-        }
-
-        .applied-filters {
-            display: flex;
-            flex-wrap: wrap;
-            margin-top: 1rem;
-            margin-bottom: 1rem;
-        }
-
-        /* Dark theme */
-        .dark-theme {
-            --primary-color: #1a2639;
-            --secondary-color: #3a506b;
-            --accent-color: #e94560;
-            --background-color: #121212;
-            --card-color: #1e1e1e;
-            --text-color: #f5f5f5;
-            --text-light: #aaaaaa;
-        }
-
-        .notification {
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
+        
+        .save-button {
             background-color: var(--primary-color);
             color: white;
-            padding: 1rem;
-            border-radius: 8px;
-            box-shadow: var(--shadow);
+            border: none;
+            border-radius: 6px;
+            padding: 12px 20px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            width: 100%;
+        }
+        
+        .save-button:hover {
+            background-color: #2a75e6;
+        }
+        
+        .typing-indicator {
+            padding: 10px 0;
             display: flex;
             align-items: center;
-            gap: 0.8rem;
-            transform: translateY(150%);
-            transition: transform 0.3s ease;
-            z-index: 50;
-            max-width: 300px;
         }
-
-        .notification.show {
-            transform: translateY(0);
+        
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            margin: 0 2px;
+            background-color: var(--dark-gray);
+            border-radius: 50%;
+            opacity: 0.6;
+            animation: typing 1.4s infinite both;
         }
-
-        .notification-icon {
-            font-size: 1.2rem;
+        
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        
+        @keyframes typing {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+            100% { transform: translateY(0); }
+        }
+        
+        footer {
+            background-color: var(--text-color);
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+        }
+        
+        .footer-content {
+            max-width: 800px;
+            margin: 0 auto;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+        
+        .footer-content a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        
+        .footer-content a:hover {
+            text-decoration: underline;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .subtitle {
+                font-size: 1rem;
+            }
+            
+            .chat-container {
+                margin: 10px auto;
+            }
+        }
+        
+        .markdown h1 {
+            font-size: 1.5rem;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
+        }
+        
+        .markdown h2 {
+            font-size: 1.3rem;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+            color: var(--secondary-color);
+        }
+        
+        .markdown h3 {
+            font-size: 1.1rem;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
             color: var(--accent-color);
         }
-
-        .notification-content {
-            flex: 1;
-        }
-
-        .notification-title {
-            font-weight: 600;
-            margin-bottom: 0.2rem;
-        }
-
-        .notification-message {
-            font-size: 0.9rem;
-            opacity: 0.9;
-        }
-
-        .notification-close {
-            padding: 0.3rem;
-            cursor: pointer;
-            opacity: 0.7;
-            transition: var(--transition);
-        }
-
-        .notification-close:hover {
-            opacity: 1;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 3rem 1rem;
-            color: var(--text-light);
-        }
-
-        .empty-icon {
-            font-size: 3rem;
+        
+        .markdown p {
             margin-bottom: 1rem;
-            opacity: 0.5;
+            line-height: 1.6;
         }
-
-        .empty-title {
-            font-size: 1.5rem;
+        
+        .markdown ul, .markdown ol {
+            margin-left: 1.5rem;
+            margin-bottom: 1rem;
+            padding-left: 1rem;
+        }
+        
+        .markdown li {
             margin-bottom: 0.5rem;
         }
-
-        .empty-description {
-            max-width: 500px;
-            margin: 0 auto;
+        
+        .markdown code {
+            background-color: var(--code-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.9em;
+            color: var(--accent-color);
         }
-
-        /* Tooltip */
-        .tooltip {
-            position: relative;
-            display: inline-block;
+        
+        .markdown pre {
+            background-color: var(--code-bg);
+            padding: 1rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin-bottom: 1rem;
+            border: 1px solid var(--medium-gray);
         }
-
-        .tooltip .tooltip-text {
-            visibility: hidden;
-            width: 200px;
-            background-color: #333;
-            color: #fff;
-            text-align: center;
-            border-radius: 6px;
-            padding: 5px;
-            position: absolute;
-            z-index: 1;
-            bottom: 125%;
-            left: 50%;
-            margin-left: -100px;
-            opacity: 0;
-            transition: opacity 0.3s;
-            font-size: 0.8rem;
+        
+        .markdown pre code {
+            background-color: transparent;
+            padding: 0;
+            color: var(--text-color);
+            font-size: 0.9em;
+            display: block;
+            line-height: 1.5;
         }
-
-        .tooltip:hover .tooltip-text {
-            visibility: visible;
-            opacity: 1;
+        
+        .markdown blockquote {
+            border-left: 4px solid var(--blockquote-border);
+            background-color: var(--blockquote-bg);
+            padding: 0.5rem 1rem;
+            margin: 1rem 0;
+            font-style: italic;
+            color: var(--dark-gray);
+        }
+        
+        .markdown hr {
+            border: 0;
+            height: 1px;
+            background-color: var(--medium-gray);
+            margin: 1.5rem 0;
+        }
+        
+        .markdown table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-bottom: 1rem;
+            overflow-x: auto;
+            display: block;
+        }
+        
+        .markdown table th {
+            background-color: var(--table-header-bg);
+            border: 1px solid var(--table-border);
+            padding: 0.5rem;
+            text-align: left;
+        }
+        
+        .markdown table td {
+            border: 1px solid var(--table-border);
+            padding: 0.5rem;
+        }
+        
+        .markdown img {
+            max-width: 100%;
+            height: auto;
+            margin: 1rem 0;
+            border-radius: 4px;
+        }
+        
+        .markdown a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .markdown a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
     <header>
         <div class="container">
-            <h1 class="title">ScholarlySearch</h1>
-            <p class="subtitle">Search for academic literature across major physics and science journals using the CrossRef database.</p>
-            <button class="theme-toggle" id="themeToggle">
-                <i class="fas fa-moon"></i>
-            </button>
+            <div class="header-content">
+                <h1>Nuclear Physics Research Assistant</h1>
+                <p class="subtitle">Ask questions about nuclear theory and get AI-powered explanations with arXiv paper references</p>
+            </div>
         </div>
     </header>
 
     <main class="container">
-        <div class="search-container">
-            <form class="search-form" id="searchForm">
-                <input type="text" class="search-input" id="searchInput" placeholder="Enter keywords (e.g., quantum chromodynamics, nucleon structure)">
-                <button type="submit" class="search-button">
-                    <i class="fas fa-search"></i>
-                    Search
+        <div class="chat-container">
+            <div class="chat-messages" id="chat-messages">
+                <div class="message message-ai">
+                    <div class="message-content">
+                        Hello! I'm your Nuclear Physics Research Assistant. Ask me about any nuclear physics concept, method, or theory, and I'll provide an explanation along with relevant research papers. Try asking something like "What is CDCC method?" or "Explain nuclear shell model."
+                    </div>
+                    <div class="message-time">Just now</div>
+                </div>
+            </div>
+            <div class="chat-input-container">
+                <input type="text" id="chat-input" class="chat-input" placeholder="Ask about nuclear physics concepts or methods..." autocomplete="off">
+                <button id="send-button" class="send-button">
+                    <i class="fas fa-paper-plane"></i>
                 </button>
-            </form>
-            
-            <div class="journal-filters">
-                <label class="filter-label">Filter by Journal:</label>
-                <div id="journalChips"></div>
+                <button id="settings-button" class="settings-button">
+                    <i class="fas fa-cog"></i>
+                </button>
             </div>
-            
-            <button class="advanced-toggle" id="advancedToggle">
-                <i class="fas fa-sliders-h"></i>
-                Advanced Options
-            </button>
-            
-            <div class="advanced-options" id="advancedOptions">
-                <div class="options-grid">
-                    <div class="option-group">
-                        <label class="option-label" for="yearFrom">From Year:</label>
-                        <input type="number" class="option-input" id="yearFrom" min="1900" max="2025">
-                    </div>
-                    <div class="option-group">
-                        <label class="option-label" for="yearTo">To Year:</label>
-                        <input type="number" class="option-input" id="yearTo" min="1900" max="2025">
-                    </div>
-                    <div class="option-group">
-                        <label class="option-label" for="resultsPerPage">Results Per Page:</label>
-                        <select class="option-input" id="resultsPerPage">
-                            <option value="10">10</option>
-                            <option value="20" selected>20</option>
-                            <option value="50">50</option>
-                            <option value="100">100</option>
-                        </select>
-                    </div>
-                    <div class="option-group">
-                        <label class="option-label" for="sortBy">Sort By:</label>
-                        <select class="option-input" id="sortBy">
-                            <option value="relevance">Relevance</option>
-                            <option value="published-desc">Newest First</option>
-                            <option value="published-asc">Oldest First</option>
-                            <option value="impact-desc">Impact Factor (High to Low)</option>
-                            <option value="impact-asc">Impact Factor (Low to High)</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="applied-filters" id="appliedFilters"></div>
-        </div>
-        
-        <div class="error-message" id="errorMessage"></div>
-        
-        <div class="results-container" id="resultsContainer">
-            <div class="empty-state" id="emptyState">
-                <i class="fas fa-search empty-icon"></i>
-                <h3 class="empty-title">Begin Your Research Journey</h3>
-                <p class="empty-description">Enter keywords above to search for relevant articles across major physics and science journals.</p>
-            </div>
-            
-            <div class="results-header" id="resultsHeader" style="display: none;">
-                <div>
-                    <h2 class="results-title">Search Results</h2>
-                    <p class="results-count" id="resultsCount">0 results found</p>
-                </div>
-                <div class="sort-options">
-                    <span class="sort-label">Sort:</span>
-                    <select class="sort-select" id="sortSelect">
-                        <option value="relevance">Relevance</option>
-                        <option value="published-desc">Newest First</option>
-                        <option value="published-asc">Oldest First</option>
-                        <option value="impact-desc">Impact Factor (High to Low)</option>
-                        <option value="impact-asc">Impact Factor (Low to High)</option>
-                    </select>
-                </div>
-            </div>
-            
-            <div class="articles-grid" id="articlesGrid"></div>
-            
-            <div class="loading" id="loading">
-                <div class="spinner"></div>
-            </div>
-            
-            <div class="no-results" id="noResults">
-                <i class="fas fa-exclamation-circle" style="font-size: 2rem; margin-bottom: 1rem;"></i>
-                <h3>No Results Found</h3>
-                <p>Try adjusting your search terms or filters to find more results.</p>
-            </div>
-            
-            <div class="pagination" id="pagination"></div>
         </div>
     </main>
-    
-    <div class="modal" id="articleModal">
-        <div class="modal-content">
-            <button class="close-button" id="closeModal">
-                <i class="fas fa-times"></i>
-            </button>
-            <div class="modal-header">
-                <div class="modal-journal" id="modalJournal"></div>
-                <h2 class="modal-title" id="modalTitle"></h2>
-                <div class="modal-authors" id="modalAuthors"></div>
+
+    <div id="settings-modal" class="settings-modal">
+        <div class="settings-content">
+            <div class="settings-header">
+                <h2 class="settings-title">Settings</h2>
+                <button id="close-settings" class="close-button">&times;</button>
             </div>
-            <div class="modal-meta" id="modalMeta"></div>
-            <div class="modal-abstract" id="modalAbstract"></div>
-            <div class="modal-links" id="modalLinks"></div>
+            <div class="form-group">
+                <label for="api-key">DashScope API Key</label>
+                <input type="password" id="api-key" placeholder="Enter your DashScope API key">
+                <p style="font-size: 0.8rem; color: var(--dark-gray); margin-top: 5px;">
+                    Your API key is stored securely in your browser's local storage.
+                </p>
+            </div>
+            <div class="form-group">
+                <label for="num-papers">Maximum papers to show</label>
+                <input type="number" id="num-papers" value="5" min="1" max="20">
+            </div>
+            <button id="save-settings" class="save-button">Save Settings</button>
         </div>
     </div>
-    
-    <div class="notification" id="notification">
-        <div class="notification-icon">
-            <i class="fas fa-info-circle"></i>
-        </div>
-        <div class="notification-content">
-            <div class="notification-title" id="notificationTitle"></div>
-            <div class="notification-message" id="notificationMessage"></div>
-        </div>
-        <div class="notification-close" id="notificationClose">
-            <i class="fas fa-times"></i>
-        </div>
-    </div>
-    
+
     <footer>
-        <div class="container footer-content">
-            <div>
-                <div class="footer-logo">ScholarlySearch</div>
-                <p class="footer-text">Powered by CrossRef API</p>
-            </div>
-            <div class="footer-links">
-                <a href="https://github.com/yourusername/scholarlysearch" class="footer-link" target="_blank">GitHub</a>
-                <a href="#" class="footer-link">About</a>
-                <a href="#" class="footer-link">Privacy</a>
-            </div>
+        <div class="footer-content">
+            <p>Designed and made by <a href="http://jinlei.fewbody.com/">Jin Lei</a>. Supported by the National Natural Science Foundation of China (Grants No. 12475132). If you find any bugs or errors related to this website, please <a href="mailto:jinl@tongji.edu.cn">email me</a>.</p>
         </div>
     </footer>
 
     <script>
-        // Constants for journal data
-        const TARGET_JOURNALS = {
-            "Physical Review C": "2469-9985",
-            "Physical Review Letters": "0031-9007",
-            "Journal of Physics G: Nuclear and Particle Physics": "0954-3899",
-            "European Physical Journal A": "1434-6001",
-            "Physics Letters B": "0370-2693",
-            "Nuclear Physics A": "0375-9474",
-            "Few-Body Systems": "0177-7963",
-            "Chinese Physics C": "1674-1137",
-            "Nature": "0028-0836",
-            "Science": "0036-8075",
-            "Nature Physics": "1745-2481",
-            "Progress in Particle and Nuclear Physics": "0146-6410",
-            "Physics Reports": "0370-1573",
-            "Nature Reviews Physics": "2522-5820",
-            "Reviews of Modern Physics": "0034-6861"
-        };
-
-        const JOURNAL_IMPACT_FACTORS = {
-            "Physical Review C": 3.132,
-            "Physical Review Letters": 9.227,
-            "Journal of Physics G: Nuclear and Particle Physics": 2.899,
-            "European Physical Journal A": 2.176,
-            "Physics Letters B": 4.807,
-            "Nuclear Physics A": 1.683,
-            "Few-Body Systems": 1.475,
-            "Chinese Physics C": 3.761,
-            "Nature": 49.962,
-            "Science": 47.728,
-            "Nature Physics": 20.113,
-            "Progress in Particle and Nuclear Physics": 10.000,
-            "Physics Reports": 25.000,
-            "Nature Reviews Physics": 30.000,
-            "Reviews of Modern Physics": 44.000
-        };
-
-        const JOURNAL_ABBREVIATIONS = {
-            "Physical Review C": "Phys. Rev. C",
-            "Physical Review Letters": "Phys. Rev. Lett.",
-            "Journal of Physics G: Nuclear and Particle Physics": "J. Phys. G",
-            "European Physical Journal A": "Eur. Phys. J. A",
-            "Physics Letters B": "Phys. Lett. B",
-            "Nuclear Physics A": "Nucl. Phys. A",
-            "Few-Body Systems": "Few-Body Syst.",
-            "Chinese Physics C": "Chin. Phys. C",
-            "Nature": "Nature",
-            "Science": "Science",
-            "Nature Physics": "Nat. Phys.",
-            "Progress in Particle and Nuclear Physics": "Prog. Part. Nucl. Phys.",
-            "Physics Reports": "Phys. Rep.",
-            "Nature Reviews Physics": "Nat. Rev. Phys.",
-            "Reviews of Modern Physics": "Rev. Mod. Phys."
-        };
-
-        // State management
-        let state = {
-            currentQuery: '',
-            selectedJournals: [],
-            currentPage: 1,
-            totalPages: 0,
-            resultsPerPage: 20,
-            sortBy: 'relevance',
-            yearFrom: null,
-            yearTo: null,
-            appliedFilters: {}
-        };
-
-        // DOM elements
-        const elements = {
-            searchForm: document.getElementById('searchForm'),
-            searchInput: document.getElementById('searchInput'),
-            journalChips: document.getElementById('journalChips'),
-            articlesGrid: document.getElementById('articlesGrid'),
-            loading: document.getElementById('loading'),
-            noResults: document.getElementById('noResults'),
-            resultsCount: document.getElementById('resultsCount'),
-            pagination: document.getElementById('pagination'),
-            resultsHeader: document.getElementById('resultsHeader'),
-            emptyState: document.getElementById('emptyState'),
-            errorMessage: document.getElementById('errorMessage'),
-            sortSelect: document.getElementById('sortSelect'),
-            advancedToggle: document.getElementById('advancedToggle'),
-            advancedOptions: document.getElementById('advancedOptions'),
-            yearFrom: document.getElementById('yearFrom'),
-            yearTo: document.getElementById('yearTo'),
-            resultsPerPage: document.getElementById('resultsPerPage'),
-            sortBy: document.getElementById('sortBy'),
-            appliedFilters: document.getElementById('appliedFilters'),
-            themeToggle: document.getElementById('themeToggle'),
-            articleModal: document.getElementById('articleModal'),
-            closeModal: document.getElementById('closeModal'),
-            modalJournal: document.getElementById('modalJournal'),
-            modalTitle: document.getElementById('modalTitle'),
-            modalAuthors: document.getElementById('modalAuthors'),
-            modalMeta: document.getElementById('modalMeta'),
-            modalAbstract: document.getElementById('modalAbstract'),
-            modalLinks: document.getElementById('modalLinks'),
-            notification: document.getElementById('notification'),
-            notificationTitle: document.getElementById('notificationTitle'),
-            notificationMessage: document.getElementById('notificationMessage'),
-            notificationClose: document.getElementById('notificationClose')
-        };
-
-        // Initialize the app
-        function init() {
-            // Populate journal chips
-            populateJournalChips();
+        // DOM Elements
+        const chatMessages = document.getElementById('chat-messages');
+        const chatInput = document.getElementById('chat-input');
+        const sendButton = document.getElementById('send-button');
+        const settingsButton = document.getElementById('settings-button');
+        const settingsModal = document.getElementById('settings-modal');
+        const closeSettings = document.getElementById('close-settings');
+        const saveSettings = document.getElementById('save-settings');
+        const apiKeyInput = document.getElementById('api-key');
+        const numPapersInput = document.getElementById('num-papers');
+        
+        // App state
+        let isWaitingForResponse = false;
+        let currentResponseElement = null;
+        
+        // Load settings from localStorage
+        window.addEventListener('DOMContentLoaded', () => {
+            const apiKey = localStorage.getItem('dashscope_api_key') || '';
+            const numPapers = localStorage.getItem('num_papers') || '5';
             
-            // Set current year
-            const currentYear = new Date().getFullYear();
-            elements.yearTo.value = currentYear;
-            
-            // Event listeners
-            elements.searchForm.addEventListener('submit', handleSearch);
-            elements.sortSelect.addEventListener('change', handleSortChange);
-            elements.advancedToggle.addEventListener('click', toggleAdvancedOptions);
-            elements.themeToggle.addEventListener('click', toggleTheme);
-            elements.closeModal.addEventListener('click', closeModal);
-            elements.notificationClose.addEventListener('click', hideNotification);
-            elements.yearFrom.addEventListener('change', updateFilters);
-            elements.yearTo.addEventListener('change', updateFilters);
-            elements.resultsPerPage.addEventListener('change', updateFilters);
-            elements.sortBy.addEventListener('change', updateFilters);
-            
-            // Check if dark theme is preferred
-            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-                document.body.classList.add('dark-theme');
-                elements.themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+            apiKeyInput.value = apiKey;
+            numPapersInput.value = numPapers;
+        });
+        
+        // Settings modal
+        settingsButton.addEventListener('click', () => {
+            settingsModal.style.display = 'flex';
+        });
+        
+        closeSettings.addEventListener('click', () => {
+            settingsModal.style.display = 'none';
+        });
+        
+        settingsModal.addEventListener('click', (event) => {
+            if (event.target === settingsModal) {
+                settingsModal.style.display = 'none';
             }
+        });
+        
+        saveSettings.addEventListener('click', () => {
+            const apiKey = apiKeyInput.value.trim();
+            const numPapers = numPapersInput.value;
             
-            // Set placeholder for better UX
-            const randomPlaceholders = [
-                "quantum chromodynamics",
-                "nuclear structure",
-                "chiral effective field theory",
-                "lattice QCD",
-                "neutron stars"
-            ];
-            const randomPlaceholder = randomPlaceholders[Math.floor(Math.random() * randomPlaceholders.length)];
-            elements.searchInput.placeholder = `Enter keywords (e.g., ${randomPlaceholder})`;
-        }
-
-        // Populate journal chips
-        function populateJournalChips() {
-            let html = '';
-            for (const journal in TARGET_JOURNALS) {
-                html += `
-                    <div class="journal-chip tooltip" data-journal="${journal}" onclick="toggleJournalSelection('${journal}')">
-                        ${journal.length > 20 ? journal.substring(0, 20) + '...' : journal}
-                        <span class="tooltip-text">IF: ${JOURNAL_IMPACT_FACTORS[journal]}</span>
-                    </div>
-                `;
+            localStorage.setItem('dashscope_api_key', apiKey);
+            localStorage.setItem('num_papers', numPapers);
+            
+            settingsModal.style.display = 'none';
+        });
+        
+        // Send message on Enter press
+        chatInput.addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') {
+                sendMessage();
             }
-            elements.journalChips.innerHTML = html;
-        }
-
-        // Toggle journal selection
-        function toggleJournalSelection(journal) {
-            const chip = document.querySelector(`.journal-chip[data-journal="${journal}"]`);
+        });
+        
+        // Send message on button click
+        sendButton.addEventListener('click', sendMessage);
+        
+        // Show user message and get response
+        function sendMessage() {
+            const message = chatInput.value.trim();
             
-            if (state.selectedJournals.includes(journal)) {
-                // Remove journal
-                state.selectedJournals = state.selectedJournals.filter(j => j !== journal);
-                chip.classList.remove('selected');
-            } else {
-                // Add journal
-                state.selectedJournals.push(journal);
-                chip.classList.add('selected');
-            }
+            if (!message || isWaitingForResponse) return;
             
-            if (state.currentQuery) {
-                updateFilters();
-            }
-        }
-
-        // Handle search form submission
-        function handleSearch(event) {
-            event.preventDefault();
+            // Add user message to chat
+            addMessage(message, 'user');
             
-            const query = elements.searchInput.value.trim();
-            if (!query) {
-                showError("Please enter search terms");
-                return;
-            }
+            // Clear input
+            chatInput.value = '';
             
-            state.currentQuery = query;
-            state.currentPage = 1;
-            
-            // Update filters from advanced options
-            updateFiltersFromAdvanced();
-            
-            // Search
-            searchCrossRef();
-        }
-
-        // Update filters from advanced options
-        function updateFiltersFromAdvanced() {
-            state.yearFrom = elements.yearFrom.value ? parseInt(elements.yearFrom.value) : null;
-            state.yearTo = elements.yearTo.value ? parseInt(elements.yearTo.value) : null;
-            state.resultsPerPage = parseInt(elements.resultsPerPage.value);
-            state.sortBy = elements.sortBy.value;
-            
-            // Update applied filters display
-            updateAppliedFiltersDisplay();
-        }
-
-        // Update filters display
-        function updateAppliedFiltersDisplay() {
-            let html = '';
-            
-            // Add filter for search query
-            html += `
-                <div class="filter-badge">
-                    <i class="fas fa-search"></i> ${state.currentQuery}
-                </div>
-            `;
-            
-            // Add filters for selected journals
-            if (state.selectedJournals.length > 0) {
-                html += `
-                    <div class="filter-badge">
-                        <i class="fas fa-book"></i> ${state.selectedJournals.length} journal${state.selectedJournals.length > 1 ? 's' : ''}
-                    </div>
-                `;
-            }
-            
-            // Add filter for year range
-            if (state.yearFrom || state.yearTo) {
-                let yearText = '';
-                if (state.yearFrom && state.yearTo) {
-                    yearText = `${state.yearFrom} - ${state.yearTo}`;
-                } else if (state.yearFrom) {
-                    yearText = `From ${state.yearFrom}`;
-                } else if (state.yearTo) {
-                    yearText = `Until ${state.yearTo}`;
-                }
-                
-                html += `
-                    <div class="filter-badge">
-                        <i class="fas fa-calendar"></i> ${yearText}
-                    </div>
-                `;
-            }
-            
-            elements.appliedFilters.innerHTML = html;
-        }
-
-        // Update filters and research
-        function updateFilters() {
-            if (state.currentQuery) {
-                updateFiltersFromAdvanced();
-                searchCrossRef();
-            }
-        }
-
-        // Toggle advanced options
-        function toggleAdvancedOptions() {
-            const isVisible = elements.advancedOptions.style.display === 'block';
-            elements.advancedOptions.style.display = isVisible ? 'none' : 'block';
-            elements.advancedToggle.innerHTML = isVisible ? 
-                '<i class="fas fa-sliders-h"></i> Advanced Options' : 
-                '<i class="fas fa-times"></i> Hide Advanced Options';
-        }
-
-        // Search CrossRef API
-        function searchCrossRef() {
-            showLoading();
-            
-            // Base URL - Use CORS proxy to avoid cross-origin issues
-            let baseUrl = 'https://api.crossref.org/works';
-            
-            // Add polite pool parameter with email for better service
-            const corsProxyUrl = 'https://corsproxy.io/?';
-            
-            // Build query parameters
-            const params = new URLSearchParams();
-            
-            // Add search query
-            params.append('query', state.currentQuery);
-            
-            // Add journal filters if selected
-            if (state.selectedJournals.length > 0) {
-                const issnList = state.selectedJournals.map(journal => TARGET_JOURNALS[journal]);
-                params.append('issn', issnList.join(','));
-            }
-            
-            // Add date range filters
-            if (state.yearFrom) {
-                params.append('from-pub-date', `${state.yearFrom}-01-01`);
-            }
-            if (state.yearTo) {
-                params.append('until-pub-date', `${state.yearTo}-12-31`);
-            }
-            
-            // Add pagination
-            params.append('rows', state.resultsPerPage);
-            params.append('offset', (state.currentPage - 1) * state.resultsPerPage);
-            
-            // Add sorting
-            switch (state.sortBy) {
-                case 'published-desc':
-                    params.append('sort', 'published');
-                    params.append('order', 'desc');
-                    break;
-                case 'published-asc':
-                    params.append('sort', 'published');
-                    params.append('order', 'asc');
-                    break;
-                default:
-                    params.append('sort', 'score');
-                    params.append('order', 'desc');
-            }
-            
-            // Complete URL with CORS proxy
-            const url = `${corsProxyUrl}${encodeURIComponent(baseUrl + '?' + params.toString())}`;
-            
-            // Make API request with headers
-            fetch(url, {
-                headers: {
-                    'User-Agent': 'ScholarlySearch/1.0 (https://github.com/yourusername/scholarlysearch; mailto:example@example.com)',
-                }
-            })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`Network response was not ok: ${response.status} ${response.statusText}`);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    processResults(data);
-                })
-                .catch(error => {
-                    console.error('Error fetching data:', error);
-                    
-                    // Show more detailed error message
-                    showError("Error connecting to CrossRef API. Using sample data instead.");
-                    
-                    // Use sample data as fallback
-                    processSampleData();
-                })
-                .finally(() => {
-                    hideLoading();
-                });
+            // Get AI response
+            getAIResponse(message);
         }
         
-        // Process sample data when API fails
-        function processSampleData() {
-            // Sample data with a few physics articles
-            const sampleData = {
-                message: {
-                    items: [
-                        {
-                            title: ["Lattice QCD and nuclear physics"],
-                            author: [
-                                { family: "Savage", given: "Martin J." },
-                                { family: "Shanahan", given: "Phiala E." },
-                                { family: "Tiburzi", given: "Brian C." }
-                            ],
-                            published: { "date-parts": [[2023, 4, 15]] },
-                            "container-title": ["Progress in Particle and Nuclear Physics"],
-                            ISSN: ["0146-6410"],
-                            DOI: "10.1016/j.ppnp.2023.103981",
-                            abstract: "We review recent progress in lattice QCD calculations relevant for nuclear physics, focusing on nucleon structure, few-nucleon systems, and nuclear matrix elements important for fundamental symmetry tests."
-                        },
-                        {
-                            title: ["Neutron Star Equation of State Constraints from GW170817"],
-                            author: [
-                                { family: "Abbott", given: "B. P." },
-                                { family: "Abbott", given: "R." },
-                                { family: "Abbott", given: "T. D." }
-                            ],
-                            published: { "date-parts": [[2022, 7, 20]] },
-                            "container-title": ["Physical Review Letters"],
-                            ISSN: ["0031-9007"],
-                            DOI: "10.1103/PhysRevLett.128.141103",
-                            abstract: "The observation of gravitational waves from a binary neutron star inspiral has enabled new constraints on the neutron star equation of state. This paper presents updated analyses incorporating improved waveform models."
-                        },
-                        {
-                            title: ["Chiral Effective Field Theory for Few-Nucleon Systems"],
-                            author: [
-                                { family: "Hammer", given: "H.-W." },
-                                { family: "König", given: "S." },
-                                { family: "Kubis", given: "B." }
-                            ],
-                            published: { "date-parts": [[2022, 9, 5]] },
-                            "container-title": ["Reviews of Modern Physics"],
-                            ISSN: ["0034-6861"],
-                            DOI: "10.1103/RevModPhys.94.035001",
-                            abstract: "This review summarizes recent developments in chiral effective field theory for few-nucleon systems, with emphasis on power counting, renormalization, and applications to nuclear structure and reactions."
-                        },
-                        {
-                            title: ["Quantum Chromodynamics on the Lattice"],
-                            author: [
-                                { family: "Alexandrou", given: "C." },
-                                { family: "Constantinou", given: "M." }
-                            ],
-                            published: { "date-parts": [[2021, 11, 10]] },
-                            "container-title": ["Physics Reports"],
-                            ISSN: ["0370-1573"],
-                            DOI: "10.1016/j.physrep.2021.09.001",
-                            abstract: "Lattice QCD is a numerical approach to solving QCD from first principles. This review covers the formulation of lattice QCD and applications to hadron structure and spectroscopy."
-                        },
-                        {
-                            title: ["Nucleon-Nucleon Interactions from Lattice QCD"],
-                            author: [
-                                { family: "Beane", given: "S. R." },
-                                { family: "Chang", given: "E." },
-                                { family: "Cohen", given: "S." }
-                            ],
-                            published: { "date-parts": [[2022, 4, 1]] },
-                            "container-title": ["Physical Review C"],
-                            ISSN: ["2469-9985"],
-                            DOI: "10.1103/PhysRevC.105.045201",
-                            abstract: "We present a calculation of nucleon-nucleon scattering parameters directly from the underlying theory of quantum chromodynamics using numerical lattice techniques."
-                        },
-                        {
-                            title: ["Neutrino-Nucleus Interactions and the Path to New Physics"],
-                            author: [
-                                { family: "Formaggio", given: "J. A." },
-                                { family: "Zeller", given: "G. P." }
-                            ],
-                            published: { "date-parts": [[2021, 8, 15]] },
-                            "container-title": ["Journal of Physics G: Nuclear and Particle Physics"],
-                            ISSN: ["0954-3899"],
-                            DOI: "10.1088/1361-6471/abf8dd",
-                            abstract: "This review discusses neutrino-nucleus interactions and their importance for present and future neutrino experiments, with emphasis on the interplay between nuclear physics and searches for new physics."
-                        }
-                    ],
-                    total_results: 6
-                }
-            };
+        // Add message to chat
+        function addMessage(content, sender) {
+            const messageElement = document.createElement('div');
+            messageElement.className = `message message-${sender}`;
             
-            processResults(sampleData);
+            const contentElement = document.createElement('div');
+            contentElement.className = 'message-content markdown';
+            contentElement.textContent = content;
+            
+            const timeElement = document.createElement('div');
+            timeElement.className = 'message-time';
+            timeElement.textContent = getFormattedTime();
+            
+            messageElement.appendChild(contentElement);
+            messageElement.appendChild(timeElement);
+            
+            chatMessages.appendChild(messageElement);
+            
+            // Scroll to bottom
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            
+            return contentElement;
         }
-
-        // Process API results
-        function processResults(data) {
-            const { items, total_results } = data.message;
+        
+        // Create typing indicator
+        function addTypingIndicator() {
+            const typingElement = document.createElement('div');
+            typingElement.className = 'typing-indicator';
             
-            // Calculate total pages
-            state.totalPages = Math.ceil(total_results / state.resultsPerPage);
-            
-            // Update results count
-            elements.resultsCount.textContent = `${total_results} results found`;
-            
-            // Show/hide results header
-            elements.resultsHeader.style.display = total_results > 0 ? 'flex' : 'none';
-            
-            // Hide empty state
-            elements.emptyState.style.display = 'none';
-            
-            if (items.length === 0) {
-                // Show no results message
-                elements.noResults.style.display = 'block';
-                elements.articlesGrid.innerHTML = '';
-                elements.pagination.innerHTML = '';
-            } else {
-                // Hide no results message
-                elements.noResults.style.display = 'none';
-                
-                // Sort by impact factor if needed
-                let sortedItems = [...items];
-                if (state.sortBy === 'impact-desc' || state.sortBy === 'impact-asc') {
-                    sortedItems = sortByImpactFactor(items, state.sortBy === 'impact-desc');
-                }
-                
-                // Display results
-                displayResults(sortedItems);
-                
-                // Update pagination
-                updatePagination();
+            for (let i = 0; i < 3; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'typing-dot';
+                typingElement.appendChild(dot);
             }
-        }
-
-        // Sort articles by journal impact factor
-        function sortByImpactFactor(items, descending = true) {
-            return items.sort((a, b) => {
-                const journalA = findJournalByISSN(a.ISSN?.[0] || '');
-                const journalB = findJournalByISSN(b.ISSN?.[0] || '');
-                
-                const impactA = journalA ? JOURNAL_IMPACT_FACTORS[journalA] : 0;
-                const impactB = journalB ? JOURNAL_IMPACT_FACTORS[journalB] : 0;
-                
-                return descending ? impactB - impactA : impactA - impactB;
-            });
-        }
-
-        // Find journal name by ISSN
-        function findJournalByISSN(issn) {
-            for (const journal in TARGET_JOURNALS) {
-                if (TARGET_JOURNALS[journal] === issn) {
-                    return journal;
-                }
-            }
-            return null;
-        }
-
-        // Display search results
-        function displayResults(items) {
-            let html = '';
             
-            for (const item of items) {
-                // Get journal info
-                const journalName = item.container_title?.[0] || findJournalByISSN(item.ISSN?.[0] || '') || 'Unknown Journal';
-                const journalAbbr = JOURNAL_ABBREVIATIONS[journalName] || journalName;
-                const impactFactor = JOURNAL_IMPACT_FACTORS[journalName];
+            chatMessages.appendChild(typingElement);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            
+            return typingElement;
+        }
+        
+        // Format current time
+        function getFormattedTime() {
+            const now = new Date();
+            let hours = now.getHours();
+            let minutes = now.getMinutes();
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            
+            hours = hours % 12;
+            hours = hours ? hours : 12;
+            minutes = minutes < 10 ? '0' + minutes : minutes;
+            
+            return `${hours}:${minutes} ${ampm}`;
+        }
+        
+        // Get AI response
+        async function getAIResponse(userQuery) {
+            // Check if API key is available
+            const apiKey = localStorage.getItem('dashscope_api_key');
+            if (!apiKey) {
+                const contentElement = addMessage('Please set your DashScope API key in the settings before using the assistant.', 'ai');
+                settingsButton.click();
+                return;
+            }
+            
+            // Add AI message placeholder with typing indicator
+            const messageElement = document.createElement('div');
+            messageElement.className = 'message message-ai';
+            
+            const contentElement = document.createElement('div');
+            contentElement.className = 'message-content markdown';
+            contentElement.innerHTML = '';
+            
+            const timeElement = document.createElement('div');
+            timeElement.className = 'message-time';
+            timeElement.textContent = getFormattedTime();
+            
+            messageElement.appendChild(contentElement);
+            messageElement.appendChild(timeElement);
+            
+            chatMessages.appendChild(messageElement);
+            
+            const typingIndicator = addTypingIndicator();
+            
+            // Set waiting state
+            isWaitingForResponse = true;
+            currentResponseElement = contentElement;
+            
+            // Disable input during response
+            chatInput.disabled = true;
+            sendButton.disabled = true;
+            
+            try {
+                // First, search arXiv for relevant papers
+                const papers = await searchArXivPapers(userQuery);
                 
-                // Get authors (limit to 3 with "et al." if more)
-                let authors = '';
-                if (item.author) {
-                    const authorNames = item.author.map(a => {
-                        const family = a.family || '';
-                        const given = a.given ? a.given.split(' ').map(n => n[0]).join('. ') + '.' : '';
-                        return given ? `${family}, ${given}` : family;
+                // If papers were found, display them before the AI response
+                if (papers.length > 0) {
+                    // Remove typing indicator temporarily
+                    typingIndicator.remove();
+                    
+                    // Create papers section at the beginning
+                    const papersSection = document.createElement('div');
+                    papersSection.className = 'papers-section';
+                    
+                    const papersTitle = document.createElement('div');
+                    papersTitle.className = 'papers-title';
+                    papersTitle.textContent = 'Relevant Papers Found';
+                    
+                    const papersList = document.createElement('div');
+                    papersList.className = 'paper-list';
+                    
+                    papers.slice(0, parseInt(localStorage.getItem('num_papers') || '5')).forEach(paper => {
+                        const paperItem = document.createElement('div');
+                        paperItem.className = 'paper-item';
+                        
+                        const paperTitle = document.createElement('div');
+                        paperTitle.className = 'paper-title';
+                        paperTitle.textContent = paper.title;
+                        
+                        const paperAuthors = document.createElement('div');
+                        paperAuthors.className = 'paper-authors';
+                        paperAuthors.textContent = paper.authors.slice(0, 3).join(', ') + (paper.authors.length > 3 ? ', et al.' : '');
+                        
+                        const paperLink = document.createElement('a');
+                        paperLink.className = 'paper-link';
+                        paperLink.href = paper.link;
+                        paperLink.target = '_blank';
+                        paperLink.textContent = 'View on arXiv';
+                        
+                        paperItem.appendChild(paperTitle);
+                        paperItem.appendChild(paperAuthors);
+                        paperItem.appendChild(paperLink);
+                        
+                        papersList.appendChild(paperItem);
                     });
                     
-                    if (authorNames.length <= 3) {
-                        authors = authorNames.join(', ');
-                    } else {
-                        authors = `${authorNames.slice(0, 3).join(', ')} et al.`;
-                    }
+                    papersSection.appendChild(papersTitle);
+                    papersSection.appendChild(papersList);
+                    
+                    // Insert papers section at the beginning of the content
+                    contentElement.appendChild(papersSection);
+                    
+                    // Create a separator and a placeholder for the AI response
+                    const responseSection = document.createElement('div');
+                    responseSection.className = 'ai-response-section';
+                    responseSection.innerHTML = '<div class="response-title">Generating explanation...</div>';
+                    contentElement.appendChild(responseSection);
+                    
+                    // Add typing indicator back after the papers section
+                    chatMessages.appendChild(typingIndicator);
+                    
+                    // Scroll to show the papers
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                    
+                    // Get LLM response using papers as context and append to response section
+                    await streamLLMResponse(userQuery, papers, responseSection);
+                } else {
+                    // No papers found, just stream the response directly
+                    typingIndicator.remove();
+                    await streamLLMResponse(userQuery, [], contentElement);
                 }
                 
-                // Get publication date
-                let pubDate = 'Unknown date';
-                if (item.published) {
-                    const date = new Date(
-                        item.published['date-parts']?.[0]?.[0] || 0,
-                        (item.published['date-parts']?.[0]?.[1] || 1) - 1,
-                        item.published['date-parts']?.[0]?.[2] || 1
+            } catch (error) {
+                console.error('Error getting AI response:', error);
+                contentElement.innerHTML = `Error: ${error.message}. Please try again.`;
+                if (typingIndicator) typingIndicator.remove();
+            } finally {
+                // Reset state
+                isWaitingForResponse = false;
+                currentResponseElement = null;
+                
+                // Re-enable input
+                chatInput.disabled = false;
+                sendButton.disabled = false;
+                
+                // Scroll to bottom
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+        }
+        
+        // Search arXiv for relevant papers
+        async function searchArXivPapers(query) {
+            try {
+                // Clean and format the query for arXiv API
+                const formattedQuery = encodeURIComponent(query.replace(/[^\w\s]/gi, ' ').trim());
+                
+                // Call arXiv API
+                const arxivUrl = `https://export.arxiv.org/api/query?search_query=cat:nucl-th+AND+all:${formattedQuery}&start=0&max_results=10&sortBy=relevance&sortOrder=descending`;
+                
+                const response = await fetch(arxivUrl);
+                if (!response.ok) {
+                    throw new Error(`ArXiv API error: ${response.status}`);
+                }
+                
+                const data = await response.text();
+                
+                // Parse XML response
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(data, "text/xml");
+                const entries = xmlDoc.getElementsByTagName("entry");
+                
+                // Extract paper details
+                const papers = [];
+                for (let i = 0; i < entries.length; i++) {
+                    const entry = entries[i];
+                    
+                    const title = entry.getElementsByTagName("title")[0].textContent;
+                    const authors = Array.from(entry.getElementsByTagName("author")).map(
+                        author => author.getElementsByTagName("name")[0].textContent
                     );
-                    pubDate = date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+                    const abstract = entry.getElementsByTagName("summary")[0].textContent;
+                    const link = Array.from(entry.getElementsByTagName("link")).find(
+                        link => !link.getAttribute("title") || link.getAttribute("title") === "alternate"
+                    ).getAttribute("href");
+                    const arxivId = entry.getElementsByTagName("id")[0].textContent.split("/").pop();
+                    
+                    papers.push({
+                        title,
+                        authors,
+                        abstract,
+                        link,
+                        arxivId
+                    });
                 }
                 
-                // Get DOI and URL
-                const doi = item.DOI || '';
-                const url = doi ? `https://doi.org/${doi}` : '';
+                return papers;
                 
-                // Create card HTML
-                html += `
-                    <div class="article-card" data-doi="${doi}">
-                        <div class="article-content">
-                            <div class="article-journal">
-                                ${journalAbbr}
-                                ${impactFactor ? `<span class="impact-factor">IF: ${impactFactor}</span>` : ''}
-                            </div>
-                            <h3 class="article-title">${item.title?.[0] || 'Untitled'}</h3>
-                            <div class="article-authors">${authors}</div>
-                            <div class="article-date">${pubDate}</div>
-                            <div class="article-abstract">
-                                ${item.abstract || 'No abstract available.'}
-                            </div>
-                            <div class="article-footer">
-                                <div class="article-doi">${doi}</div>
-                                <div class="article-links">
-                                    <a href="#" class="article-link" onclick="openArticleDetails('${doi}'); return false;">
-                                        <i class="fas fa-info-circle"></i>
-                                        Details
-                                    </a>
-                                    ${url ? `
-                                        <a href="${url}" class="article-link" target="_blank">
-                                            <i class="fas fa-external-link-alt"></i>
-                                            View
-                                        </a>
-                                    ` : ''}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
+            } catch (error) {
+                console.error('Error fetching papers:', error);
+                return [];
             }
-            
-            elements.articlesGrid.innerHTML = html;
         }
-
-        // Update pagination controls
-        function updatePagination() {
-            if (state.totalPages <= 1) {
-                elements.pagination.innerHTML = '';
-                return;
-            }
+        
+        // Stream response from LLM
+        async function streamLLMResponse(query, papers, contentElement) {
+            const apiKey = localStorage.getItem('dashscope_api_key');
             
-            let html = '';
-            
-            // Previous button
-            html += `
-                <button class="page-button" ${state.currentPage === 1 ? 'disabled' : ''} 
-                    onclick="changePage(${state.currentPage - 1})">
-                    <i class="fas fa-chevron-left"></i>
-                </button>
-            `;
-            
-            // Page numbers (show 5 pages at most)
-            const startPage = Math.max(1, state.currentPage - 2);
-            const endPage = Math.min(state.totalPages, startPage + 4);
-            
-            for (let i = startPage; i <= endPage; i++) {
-                html += `
-                    <button class="page-button ${i === state.currentPage ? 'active' : ''}" 
-                        onclick="changePage(${i})">
-                        ${i}
-                    </button>
-                `;
-            }
-            
-            // Next button
-            html += `
-                <button class="page-button" ${state.currentPage === state.totalPages ? 'disabled' : ''} 
-                    onclick="changePage(${state.currentPage + 1})">
-                    <i class="fas fa-chevron-right"></i>
-                </button>
-            `;
-            
-            elements.pagination.innerHTML = html;
-        }
-
-        // Change page
-        function changePage(page) {
-            if (page < 1 || page > state.totalPages) {
-                return;
-            }
-            
-            state.currentPage = page;
-            searchCrossRef();
-            
-            // Scroll to top of results
-            elements.resultsContainer.scrollIntoView({ behavior: 'smooth' });
-        }
-
-        // Handle sort change
-        function handleSortChange() {
-            state.sortBy = elements.sortSelect.value;
-            elements.sortBy.value = state.sortBy;
-            updateFilters();
-        }
-
-        // Toggle theme
-        function toggleTheme() {
-            const isDark = document.body.classList.toggle('dark-theme');
-            elements.themeToggle.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
-            
-            // Show notification
-            showNotification(
-                isDark ? "Dark Mode Enabled" : "Light Mode Enabled", 
-                isDark ? "Easier on the eyes in low-light environments." : "Classic bright theme activated."
-            );
-        }
-
-        // Open article details modal
-        function openArticleDetails(doi) {
-            // Show loading in modal
-            elements.modalTitle.textContent = "Loading...";
-            elements.modalJournal.textContent = "";
-            elements.modalAuthors.textContent = "";
-            elements.modalMeta.innerHTML = "";
-            elements.modalAbstract.textContent = "";
-            elements.modalLinks.innerHTML = "";
-            
-            // Show modal
-            elements.articleModal.style.display = 'block';
-            
-            // Use CORS proxy
-            const corsProxyUrl = 'https://corsproxy.io/?';
-            const apiUrl = `https://api.crossref.org/works/${doi}`;
-            
-            // Fetch article details
-            fetch(`${corsProxyUrl}${encodeURIComponent(apiUrl)}`, {
-                headers: {
-                    'User-Agent': 'ScholarlySearch/1.0 (https://github.com/yourusername/scholarlysearch; mailto:example@example.com)',
-                }
-            })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`Network response was not ok: ${response.status} ${response.statusText}`);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    const item = data.message;
-                    
-                    // Get journal info
-                    const journalName = item.container_title?.[0] || findJournalByISSN(item.ISSN?.[0] || '') || 'Unknown Journal';
-                    const journalAbbr = JOURNAL_ABBREVIATIONS[journalName] || journalName;
-                    const impactFactor = JOURNAL_IMPACT_FACTORS[journalName];
-                    
-                    // Set journal info
-                    elements.modalJournal.innerHTML = `
-                        ${journalAbbr}
-                        ${impactFactor ? `<span class="impact-factor">IF: ${impactFactor}</span>` : ''}
-                    `;
-                    
-                    // Set title
-                    elements.modalTitle.textContent = item.title?.[0] || 'Untitled';
-                    
-                    // Get authors
-                    let authors = '';
-                    if (item.author) {
-                        const authorNames = item.author.map(a => {
-                            const family = a.family || '';
-                            const given = a.given ? a.given : '';
-                            return given ? `${family}, ${given}` : family;
-                        });
-                        
-                        authors = authorNames.join('; ');
-                    }
-                    elements.modalAuthors.textContent = authors;
-                    
-                    // Set metadata
-                    let metaHtml = '';
-                    
-                    // Publication date
-                    let pubDate = 'Unknown date';
-                    if (item.published) {
-                        const date = new Date(
-                            item.published['date-parts']?.[0]?.[0] || 0,
-                            (item.published['date-parts']?.[0]?.[1] || 1) - 1,
-                            item.published['date-parts']?.[0]?.[2] || 1
-                        );
-                        pubDate = date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
-                    }
-                    metaHtml += `
-                        <div class="meta-item">
-                            <span class="meta-label">Published</span>
-                            <span class="meta-value">${pubDate}</span>
-                        </div>
-                    `;
-                    
-                    // DOI
-                    metaHtml += `
-                        <div class="meta-item">
-                            <span class="meta-label">DOI</span>
-                            <span class="meta-value">${item.DOI}</span>
-                        </div>
-                    `;
-                    
-                    // Volume and issue
-                    if (item.volume || item.issue) {
-                        metaHtml += `
-                            <div class="meta-item">
-                                <span class="meta-label">Volume/Issue</span>
-                                <span class="meta-value">
-                                    ${item.volume || ''}${item.issue ? ` (${item.issue})` : ''}
-                                </span>
-                            </div>
-                        `;
-                    }
-                    
-                    // Pages
-                    if (item.page) {
-                        metaHtml += `
-                            <div class="meta-item">
-                                <span class="meta-label">Pages</span>
-                                <span class="meta-value">${item.page}</span>
-                            </div>
-                        `;
-                    }
-                    
-                    // Add citation count if available
-                    if (item['is-referenced-by-count']) {
-                        metaHtml += `
-                            <div class="meta-item">
-                                <span class="meta-label">Citations</span>
-                                <span class="meta-value">${item['is-referenced-by-count']}</span>
-                            </div>
-                        `;
-                    }
-                    
-                    elements.modalMeta.innerHTML = metaHtml;
-                    
-                    // Set abstract
-                    elements.modalAbstract.innerHTML = item.abstract || 'No abstract available.';
-                    
-                    // Set links
-                    let linksHtml = '';
-                    
-                    // DOI link
-                    linksHtml += `
-                        <a href="https://doi.org/${item.DOI}" class="modal-link" target="_blank">
-                            <i class="fas fa-external-link-alt"></i>
-                            View Article
-                        </a>
-                    `;
-                    
-                    // URL link if different from DOI
-                    if (item.URL && item.URL !== `https://doi.org/${item.DOI}`) {
-                        linksHtml += `
-                            <a href="${item.URL}" class="modal-link alt" target="_blank">
-                                <i class="fas fa-globe"></i>
-                                Publisher Website
-                            </a>
-                        `;
-                    }
-                    
-                    // Add citation export options
-                    linksHtml += `
-                        <a href="#" class="modal-link alt" onclick="copyCitation('${item.DOI}', 'bibtex'); return false;">
-                            <i class="fas fa-quote-right"></i>
-                            Copy BibTeX
-                        </a>
-                    `;
-                    
-                    elements.modalLinks.innerHTML = linksHtml;
-                })
-                .catch(error => {
-                    console.error('Error fetching article details:', error);
-                    elements.modalTitle.textContent = "Error loading article details";
-                    elements.modalAbstract.textContent = "There was an error loading the article details. Please try again later.";
+            // Build paper context
+            let paperContext = '';
+            if (papers.length > 0) {
+                paperContext = 'Here are some relevant papers for context:\n\n';
+                papers.slice(0, 3).forEach((paper, index) => {
+                    paperContext += `Paper ${index + 1}: "${paper.title}" by ${paper.authors.slice(0, 2).join(', ')}\n`;
+                    paperContext += `Abstract: ${paper.abstract}\n\n`;
                 });
-        }
-
-        // Close modal
-        function closeModal() {
-            elements.articleModal.style.display = 'none';
-        }
-
-        // Copy citation
-        function copyCitation(doi, format) {
-            // We'll just simulate copying BibTeX for now
-            // In a real app, you would fetch the citation in the requested format
+            }
             
-            showNotification("Citation Copied", "BibTeX citation has been copied to your clipboard.");
+            try {
+                // If the content element is the response section, clear the "Generating explanation..." text
+                if (contentElement.className === 'ai-response-section') {
+                    contentElement.innerHTML = '<div class="response-title">AI Explanation:</div>';
+                    
+                    // Create a div to hold the streamed content
+                    const responseContent = document.createElement('div');
+                    responseContent.className = 'response-content markdown';
+                    contentElement.appendChild(responseContent);
+                    
+                    // Update the reference for streaming
+                    contentElement = responseContent;
+                }
+                
+                // Setup LLM prompt with the papers as context
+                const response = await fetch('https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${apiKey}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        model: "qwq-32b",
+                        messages: [
+                            {
+                                role: "system",
+                                content: "You are a helpful Nuclear Physics Research Assistant specializing in nuclear theory. Provide clear, concise, and accurate explanations about nuclear physics concepts, methods, and theories. Use markdown formatting for your response with appropriate headers, lists, emphasis, and code blocks where relevant. When mentioning specific papers, include citations in the format 'Author et al. (Year)' within your response."
+                            },
+                            {
+                                role: "user",
+                                content: `${query}\n\n${paperContext}`
+                            }
+                        ],
+                        stream: true,
+                        stream_options: {
+                            include_usage: true
+                        }
+                    })
+                });
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`API error: ${response.status} - ${errorText}`);
+                }
+                
+                // Process streaming response
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let fullContent = '';
+                
+                while (true) {
+                    const { value, done } = await reader.read();
+                    if (done) break;
+                    
+                    const chunk = decoder.decode(value, { stream: true });
+                    const lines = chunk.split('\n');
+                    
+                    for (const line of lines) {
+                        if (line.startsWith('data: ')) {
+                            if (line.includes('[DONE]')) {
+                                // End of stream
+                                continue;
+                            }
+                            
+                            try {
+                                // Parse the JSON data
+                                const jsonStr = line.substring(6); // Remove "data: " prefix
+                                const data = JSON.parse(jsonStr);
+                                
+                                // Extract content from the delta
+                                if (data.choices && 
+                                    data.choices[0] && 
+                                    data.choices[0].delta && 
+                                    data.choices[0].delta.content) {
+                                    
+                                    const content = data.choices[0].delta.content;
+                                    fullContent += content;
+                                    
+                                    // Update UI in real-time with formatted markdown
+                                    contentElement.innerHTML = markdownToHtml(fullContent);
+                                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                                }
+                            } catch (e) {
+                                console.warn('Error parsing streaming chunk:', e);
+                            }
+                        }
+                    }
+                }
+                
+                // Final update in case we missed anything
+                contentElement.innerHTML = markdownToHtml(fullContent);
+                
+            } catch (error) {
+                console.error('Error streaming response:', error);
+                throw error;
+            }
+        }
+        
+        // More robust markdown to HTML conversion
+        function markdownToHtml(text) {
+            if (!text) return '';
             
-            // Here you would implement actual citation copying
-            // For demo purposes, we'll just show a notification
-        }
-
-        // Show notification
-        function showNotification(title, message) {
-            elements.notificationTitle.textContent = title;
-            elements.notificationMessage.textContent = message;
-            elements.notification.classList.add('show');
+            // Process code blocks first (to avoid processing markdown inside them)
+            const codeBlocks = [];
+            text = text.replace(/```([a-z]*)\n([\s\S]*?)\n```/g, (match, language, code) => {
+                const id = codeBlocks.length;
+                codeBlocks.push(`<pre><code class="language-${language}">${escapeHtml(code)}</code></pre>`);
+                return `__CODE_BLOCK_${id}__`;
+            });
             
-            // Auto-hide after 3 seconds
-            setTimeout(() => {
-                hideNotification();
-            }, 3000);
-        }
-
-        // Hide notification
-        function hideNotification() {
-            elements.notification.classList.remove('show');
-        }
-
-        // Show loading indicator
-        function showLoading() {
-            elements.loading.style.display = 'flex';
-            elements.noResults.style.display = 'none';
-            elements.errorMessage.style.display = 'none';
-        }
-
-        // Hide loading indicator
-        function hideLoading() {
-            elements.loading.style.display = 'none';
-        }
-
-        // Show error message
-        function showError(message) {
-            elements.errorMessage.textContent = message;
-            elements.errorMessage.style.display = 'block';
+            // Process inline code
+            text = text.replace(/`([^`]+)`/g, '<code>$1</code>');
             
-            // Hide after 3 seconds
-            setTimeout(() => {
-                elements.errorMessage.style.display = 'none';
-            }, 3000);
+            // Headers
+            text = text.replace(/^### (.*$)/gim, '<h3>$1</h3>');
+            text = text.replace(/^## (.*$)/gim, '<h2>$1</h2>');
+            text = text.replace(/^# (.*$)/gim, '<h1>$1</h1>');
+            
+            // Bold and italic
+            text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            text = text.replace(/\*(.*?)\*/g, '<em>$1</em>');
+            text = text.replace(/__(.*?)__/g, '<strong>$1</strong>');
+            text = text.replace(/_(.*?)_/g, '<em>$1</em>');
+            
+            // Blockquotes
+            text = text.replace(/^\> (.+)$/gim, '<blockquote>$1</blockquote>');
+            
+            // Lists - improved handling for nested lists
+            let inList = false;
+            let listType = null;
+            
+            // Process ordered and unordered lists
+            const lines = text.split('\n');
+            for (let i = 0; i < lines.length; i++) {
+                // Unordered lists
+                if (lines[i].match(/^\s*[\-\*]\s+(.+)$/)) {
+                    const content = lines[i].replace(/^\s*[\-\*]\s+(.+)$/, '$1');
+                    
+                    if (!inList || listType !== 'ul') {
+                        // Start new list
+                        lines[i] = inList ? '</ol><ul><li>' + content + '</li>' : '<ul><li>' + content + '</li>';
+                        inList = true;
+                        listType = 'ul';
+                    } else {
+                        // Continue list
+                        lines[i] = '<li>' + content + '</li>';
+                    }
+                }
+                // Ordered lists
+                else if (lines[i].match(/^\s*\d+\.\s+(.+)$/)) {
+                    const content = lines[i].replace(/^\s*\d+\.\s+(.+)$/, '$1');
+                    
+                    if (!inList || listType !== 'ol') {
+                        // Start new list
+                        lines[i] = inList ? '</ul><ol><li>' + content + '</li>' : '<ol><li>' + content + '</li>';
+                        inList = true;
+                        listType = 'ol';
+                    } else {
+                        // Continue list
+                        lines[i] = '<li>' + content + '</li>';
+                    }
+                }
+                // Close list if line is not a list item
+                else if (inList && lines[i].trim() !== '') {
+                    lines[i] = listType === 'ul' ? '</ul>' + lines[i] : '</ol>' + lines[i];
+                    inList = false;
+                    listType = null;
+                }
+            }
+            
+            // Close any open lists
+            if (inList) {
+                lines.push(listType === 'ul' ? '</ul>' : '</ol>');
+            }
+            
+            text = lines.join('\n');
+            
+            // Links
+            text = text.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank">$1</a>');
+            
+            // Images
+            text = text.replace(/!\[(.*?)\]\((.*?)\)/g, '<img src="$2" alt="$1" style="max-width:100%;">');
+            
+            // Horizontal rule
+            text = text.replace(/^\-{3,}$/gim, '<hr>');
+            
+            // Paragraphs
+            text = text.replace(/\n\s*\n/g, '</p><p>');
+            
+            // Tables
+            const tableRegex = /^\|(.+)\|$/gm;
+            const headerRowRegex = /^\|((?:[-:]+\|)+)$/gm;
+            
+            if (text.match(tableRegex) && text.match(headerRowRegex)) {
+                let inTable = false;
+                const tableLines = text.split('\n');
+                
+                for (let i = 0; i < tableLines.length; i++) {
+                    // Table header or content row
+                    if (tableLines[i].match(/^\|(.+)\|$/)) {
+                        // If it's a separator row (|---|---|)
+                        if (tableLines[i].match(/^\|((?:[-:]+\|)+)$/)) {
+                            tableLines[i] = ''; // Skip the separator row
+                            continue;
+                        }
+                        
+                        const cells = tableLines[i]
+                            .replace(/^\||\|$/g, '') // Remove first and last pipe
+                            .split('|')
+                            .map(cell => cell.trim());
+                        
+                        if (!inTable) {
+                            // Start new table with header row
+                            tableLines[i] = '<table><thead><tr>' + 
+                                cells.map(cell => `<th>${cell}</th>`).join('') + 
+                                '</tr></thead><tbody>';
+                            inTable = true;
+                        } else {
+                            // Add body row
+                            tableLines[i] = '<tr>' + 
+                                cells.map(cell => `<td>${cell}</td>`).join('') + 
+                                '</tr>';
+                        }
+                    }
+                    // End of table
+                    else if (inTable && tableLines[i].trim() !== '') {
+                        tableLines[i] = '</tbody></table>' + tableLines[i];
+                        inTable = false;
+                    }
+                }
+                
+                // Close any open table
+                if (inTable) {
+                    tableLines.push('</tbody></table>');
+                }
+                
+                text = tableLines.join('\n');
+            }
+            
+            // Restore code blocks
+            text = text.replace(/__CODE_BLOCK_(\d+)__/g, (match, id) => {
+                return codeBlocks[parseInt(id)];
+            });
+            
+            // Wrap in paragraph if it doesn't start with a block element
+            if (!text.startsWith('<h') && !text.startsWith('<ul') && 
+                !text.startsWith('<ol') && !text.startsWith('<blockquote') && 
+                !text.startsWith('<pre') && !text.startsWith('<table')) {
+                text = '<p>' + text + '</p>';
+            }
+            
+            return text;
         }
-
-        // Initialize the app when the DOM is loaded
-        document.addEventListener('DOMContentLoaded', init);
-
-        // For window scope functions
-        window.toggleJournalSelection = toggleJournalSelection;
-        window.changePage = changePage;
-        window.openArticleDetails = openArticleDetails;
-        window.copyCitation = copyCitation;
+        
+        // Helper function to escape HTML special characters
+        function escapeHtml(text) {
+            return text
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
     </script>
 </body>
 </html>
