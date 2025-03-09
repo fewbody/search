@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Nuclear Physics Research Assistant</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -41,6 +41,7 @@
             height: 100vh;
             display: flex;
             flex-direction: column;
+            overflow-x: hidden;
         }
         
         .container {
@@ -62,11 +63,13 @@
         
         .header-content {
             text-align: center;
+            width: 100%;
         }
         
         h1 {
             font-size: 2.2rem;
             margin-bottom: 8px;
+            word-wrap: break-word;
         }
         
         .subtitle {
@@ -103,6 +106,7 @@
             flex: 1;
             overflow-y: auto;
             padding: 20px;
+            -webkit-overflow-scrolling: touch;
         }
         
         .message {
@@ -227,6 +231,8 @@
             padding: 15px;
             background-color: var(--light-gray);
             border-top: 1px solid var(--medium-gray);
+            position: relative;
+            z-index: 10;
         }
         
         .chat-input {
@@ -391,10 +397,12 @@
             color: white;
             padding: 15px 0;
             text-align: center;
-            height: var(--footer-height);
+            height: auto;
+            min-height: var(--footer-height);
             display: flex;
             align-items: center;
             justify-content: center;
+            z-index: 5;
         }
         
         .footer-content {
@@ -402,6 +410,7 @@
             margin: 0 auto;
             font-size: 0.9rem;
             line-height: 1.6;
+            padding: 0 15px;
         }
         
         .footer-content a {
@@ -411,24 +420,6 @@
         
         .footer-content a:hover {
             text-decoration: underline;
-        }
-        
-        @media (max-width: 768px) {
-            .container {
-                padding: 10px;
-            }
-            
-            h1 {
-                font-size: 1.8rem;
-            }
-            
-            .subtitle {
-                font-size: 1rem;
-            }
-            
-            .chat-container {
-                margin: 10px auto;
-            }
         }
         
         .markdown h1 {
@@ -546,6 +537,136 @@
         .markdown a:hover {
             text-decoration: underline;
         }
+        
+        /* Mobile Responsive Fixes */
+        @media (max-width: 768px) {
+            /* Header fixes */
+            :root {
+                --header-height: 160px; /* Increase header height on mobile */
+            }
+            
+            header {
+                height: auto;
+                min-height: var(--header-height);
+                padding: 15px 10px;
+            }
+            
+            .header-content {
+                padding: 10px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+                margin-bottom: 10px;
+                word-wrap: break-word;
+            }
+            
+            .subtitle {
+                font-size: 0.9rem;
+                line-height: 1.4;
+                padding: 0 5px;
+            }
+            
+            /* Main content area fixes */
+            main {
+                height: calc(100vh - var(--header-height) - var(--footer-height));
+                padding: 10px 0;
+            }
+            
+            .container {
+                padding: 5px;
+            }
+            
+            .chat-container {
+                margin: 0;
+                border-radius: 8px;
+            }
+            
+            .chat-messages {
+                padding: 15px 10px;
+            }
+            
+            .message {
+                max-width: 95%;
+                margin-bottom: 15px;
+            }
+            
+            .message-content {
+                font-size: 0.95rem;
+                line-height: 1.4;
+            }
+            
+            /* Chat input fixes */
+            .chat-input-container {
+                padding: 10px;
+            }
+            
+            .chat-input {
+                padding: 10px;
+                font-size: 14px;
+            }
+            
+            .send-button, .settings-button {
+                width: 40px;
+                height: 40px;
+            }
+            
+            /* Footer fixes */
+            footer {
+                height: auto;
+                min-height: var(--footer-height);
+                padding: 10px;
+            }
+            
+            .footer-content {
+                font-size: 0.8rem;
+                line-height: 1.4;
+                padding: 0 5px;
+            }
+            
+            /* Paper items fixes */
+            .paper-item {
+                padding: 12px;
+            }
+            
+            .paper-title {
+                font-size: 1rem;
+            }
+            
+            .paper-authors {
+                font-size: 0.85rem;
+            }
+            
+            /* Settings modal fixes */
+            .settings-content {
+                width: 95%;
+                padding: 15px;
+            }
+            
+            .form-group input {
+                padding: 8px 12px;
+            }
+        }
+        
+        /* Additional fixes for very small screens */
+        @media (max-width: 380px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            .subtitle {
+                font-size: 0.8rem;
+            }
+            
+            .message-content {
+                font-size: 0.9rem;
+            }
+            
+            .send-button, .settings-button {
+                width: 36px;
+                height: 36px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -569,7 +690,7 @@
                 </div>
             </div>
             <div class="chat-input-container">
-                <input type="text" id="chat-input" class="chat-input" placeholder="Ask about nuclear physics concepts or methods..." autocomplete="off">
+                <input type="text" id="chat-input" class="chat-input" placeholder="Ask about nuclear physics concepts..." autocomplete="off">
                 <button id="send-button" class="send-button">
                     <i class="fas fa-paper-plane"></i>
                 </button>
