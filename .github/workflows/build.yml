@@ -2,30 +2,39 @@ name: Build and Deploy
 on:
   push:
     branches: [ main ]
+  workflow_dispatch:
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         
-      - name: Setup Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: '16'
-          
-      - name: Install Dependencies
-        run: npm install
-        
-      - name: Build
+      - name: Setup Environment
         run: |
-          # This step would involve a build process that injects the API key
-          # For example, using environment variables with a build tool
-          echo "const API_KEY = '${{ secrets.DASHSCOPE_API_KEY }}';" > src/config.js
-          npm run build
+          mkdir -p build
+          cp index.html build/
+          # Copy any other static assets you have
+          # cp -r css/ js/ images/ build/
+        
+      - name: Insert API Key
+        run: |
+          # Replace placeholder with actual API key
+          # This sed command looks for a placeholder like 'const API_KEY = "PLACEHOLDER";'
+          # and replaces it with the actual API key from GitHub secrets
+          sed -i 's/const API_KEY = "PLACEHOLDER";/const API_KEY = "${{ secrets.DASHSCOPE_API_KEY }}";/g' build/index.html
           
+          # Check if the replacement was successful
+          if grep -q "${{ secrets.DASHSCOPE_API_KEY }}" build/index.html; then
+            echo "API key was successfully injected"
+          else
+            echo "API key injection failed - make sure your placeholder exists"
+            exit 1
+          fi
+      
       - name: Deploy to GitHub Pages
-        uses: JamesIves/github-pages-deploy-action@4.1.4
+        uses: JamesIves/github-pages-deploy-action@v4
         with:
           branch: gh-pages
           folder: build
