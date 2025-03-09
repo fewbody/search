@@ -23,6 +23,8 @@
             --blockquote-border: #dee2e6;
             --table-border: #dee2e6;
             --table-header-bg: #e9ecef;
+            --header-height: 120px;
+            --footer-height: 80px;
         }
         
         * {
@@ -51,8 +53,11 @@
         header {
             background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             color: white;
-            padding: 20px 0;
+            padding: 15px 0;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            height: var(--header-height);
+            display: flex;
+            align-items: center;
         }
         
         .header-content {
@@ -75,7 +80,9 @@
             flex: 1;
             display: flex;
             flex-direction: column;
-            height: calc(100vh - 180px);
+            height: calc(100vh - var(--header-height) - var(--footer-height));
+            padding: 20px 0;
+            overflow: hidden;
         }
         
         .chat-container {
@@ -85,10 +92,11 @@
             background-color: var(--card-color);
             border-radius: 10px;
             box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
-            margin: 20px auto;
+            margin: 0 auto;
             width: 100%;
-            max-width: 900px;
+            max-width: 1000px;
             overflow: hidden;
+            height: 100%;
         }
         
         .chat-messages {
@@ -99,7 +107,7 @@
         
         .message {
             margin-bottom: 20px;
-            max-width: 85%;
+            max-width: 90%;
         }
         
         .message-user {
@@ -119,6 +127,7 @@
         
         .message-content {
             line-height: 1.5;
+            font-size: 1.05rem;
         }
         
         .message-time {
@@ -129,8 +138,8 @@
         }
         
         .papers-section {
-            margin-bottom: 20px;
-            padding: 15px;
+            margin-bottom: 25px;
+            padding: 18px;
             background-color: rgba(58, 134, 255, 0.05);
             border-radius: 8px;
             border: 1px solid rgba(58, 134, 255, 0.2);
@@ -140,7 +149,7 @@
             font-weight: 600;
             margin-bottom: 15px;
             color: var(--primary-color);
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             display: flex;
             align-items: center;
         }
@@ -154,7 +163,7 @@
             font-weight: 600;
             margin-bottom: 15px;
             color: var(--secondary-color);
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             display: flex;
             align-items: center;
         }
@@ -171,26 +180,33 @@
         .paper-list {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 12px;
         }
         
         .paper-item {
-            padding: 10px;
+            padding: 15px;
             border: 1px solid var(--light-gray);
             border-radius: 8px;
             background-color: white;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .paper-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
         
         .paper-title {
             font-weight: 600;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
             color: var(--primary-color);
+            font-size: 1.1rem;
         }
         
         .paper-authors {
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             color: var(--dark-gray);
-            margin-bottom: 5px;
+            margin-bottom: 8px;
         }
         
         .paper-link {
@@ -198,7 +214,8 @@
             margin-top: 5px;
             color: var(--secondary-color);
             text-decoration: none;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
+            font-weight: 500;
         }
         
         .paper-link:hover {
@@ -372,8 +389,12 @@
         footer {
             background-color: var(--text-color);
             color: white;
-            padding: 20px 0;
+            padding: 15px 0;
             text-align: center;
+            height: var(--footer-height);
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
         .footer-content {
@@ -587,6 +608,9 @@
     </footer>
 
     <script>
+        // Replace this line with your actual API key during build
+        const API_KEY = "PLACEHOLDER";
+        
         // DOM Elements
         const chatMessages = document.getElementById('chat-messages');
         const chatInput = document.getElementById('chat-input');
@@ -604,7 +628,7 @@
         
         // Load settings from localStorage
         window.addEventListener('DOMContentLoaded', () => {
-            const apiKey = localStorage.getItem('dashscope_api_key') || '';
+            const apiKey = localStorage.getItem('dashscope_api_key') || API_KEY;
             const numPapers = localStorage.getItem('num_papers') || '5';
             
             apiKeyInput.value = apiKey;
@@ -720,8 +744,8 @@
         // Get AI response
         async function getAIResponse(userQuery) {
             // Check if API key is available
-            const apiKey = localStorage.getItem('dashscope_api_key');
-            if (!apiKey) {
+            const apiKey = localStorage.getItem('dashscope_api_key') || API_KEY;
+            if (apiKey === "PLACEHOLDER" || !apiKey) {
                 const contentElement = addMessage('Please set your DashScope API key in the settings before using the assistant.', 'ai');
                 settingsButton.click();
                 return;
@@ -898,7 +922,7 @@
         
         // Stream response from LLM
         async function streamLLMResponse(query, papers, contentElement) {
-            const apiKey = localStorage.getItem('dashscope_api_key');
+            const apiKey = localStorage.getItem('dashscope_api_key') || API_KEY;
             
             // Build paper context
             let paperContext = '';
